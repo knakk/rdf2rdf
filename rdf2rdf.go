@@ -139,7 +139,6 @@ func fileExtension(s string) string {
 		r, w := utf8.DecodeLastRuneInString(s[0:i])
 		if r == '.' {
 			return s[i:len(s)]
-			break
 		}
 		i -= w
 	}
