@@ -3,7 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
+	"log"
 	"os"
+	"unicode/utf8"
+
+	"github.com/knakk/rdf"
 )
 
 var usage = `rdf2rdf
@@ -40,12 +45,103 @@ Options:
 	-in            Input file. 
 	-out           Output file.
 	-stream=true   Streaming mode.
+
 `
 
 func main() {
+	log.SetFlags(0)
+	log.SetPrefix("ERROR: ")
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, usage)
 	}
-	flag.Usage()
+	input := flag.String("in", "", "Input file")
+	output := flag.String("out", "", "Output file")
+	flag.Parse()
 
+	if *input == "" || *output == "" {
+		fmt.Println("Usage:")
+		flag.PrintDefaults()
+		os.Exit(1)
+	}
+
+	inFile, err := os.Open(*input)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	outFile, err := os.Create(*output)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	inExt := fileExtension(*input)
+	outExt := fileExtension(*output)
+
+	if inExt == outExt {
+		log.Fatal("No conversion necessary. Input and output formats are identical.")
+	}
+
+	var inFormat, outFormat rdf.Format
+
+	switch inExt {
+	case "nt":
+		inFormat = rdf.FormatNT
+	case "nq":
+		inFormat = rdf.FormatNQ
+	case "ttl":
+		inFormat = rdf.FormatTTL
+	case "":
+		log.Fatal("Unknown file format. No file extension on input file.")
+	default:
+		log.Fatalf("Unsopported file exension on input file: %s", *inFile)
+	}
+
+	switch outExt {
+	case "nt":
+		outFormat = rdf.FormatNT
+	case "nq":
+		// No other quad-formats supported ATM
+		log.Fatal("Serializing to N-Quads currently not supported.")
+	case "ttl":
+		outFormat = rdf.FormatTTL
+	case "":
+		log.Fatal("Unknown file format. No file extension on output file.")
+	default:
+		log.Fatalf("Unsopported file exension on output file: %s", *outFile)
+	}
+
+	tripleToTriple(inFile, outFile, inFormat, outFormat)
+}
+
+func tripleToTriple(inFile, outFile *os.File, inFormat, outFormat rdf.Format) {
+	dec := rdf.NewTripleDecoder(inFile, inFormat)
+	// TODO set base to file name?
+	enc := rdf.NewTripleEncoder(outFile, outFormat)
+
+	for t, err := dec.Decode(); err != io.EOF; t, err = dec.Decode() {
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = enc.Encode(t)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	err := enc.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func fileExtension(s string) string {
+	i := len(s)
+	for i > 0 {
+		r, w := utf8.DecodeLastRuneInString(s[0:i])
+		if r == '.' {
+			return s[i:len(s)]
+			break
+		}
+		i -= w
+	}
+	return "not found"
 }
