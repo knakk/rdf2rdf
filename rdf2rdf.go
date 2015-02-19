@@ -68,11 +68,13 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer inFile.Close()
 
 	outFile, err := os.Create(*output)
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer outFile.Close()
 
 	inExt := fileExtension(*input)
 	outExt := fileExtension(*output)
