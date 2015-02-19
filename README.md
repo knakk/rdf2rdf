@@ -1,7 +1,26 @@
+## rdf2rdf
+CLI tool to convert between different RDF serialization formats.
+
+Primarly made to test and showcase the capabilites of the [rdf package](https://github.com/knakk/rdf).
+
+## Status
+
+Currently only convertes between N-Triples & Trutle. More formats are coming soon.
+
+## Usage
 <pre>
 rdf2rdf
 -------
 Convert between different RDF serialization formats.
+
+Usage:
+	rdf2rdf -in=input.xml -out=output.ttl
+
+Options:
+	-h --help      Show this message.
+	-in            Input file.
+	-out           Output file.
+	-stream=true   Streaming mode.
 
 By default the converter is streaming both input and output, emitting
 converted triples/quads as soon as they are available. This ensures you can
@@ -25,12 +44,4 @@ the following table:
   RDF/XML   | .rdf .rdfxml .xml
   Turtle    | .ttl
 
-Usage:
-	rdf2rdf -in=input.xml -out=output.ttl
-
-Options:
-	-h --help      Show this message.
-	-in            Input file. 
-	-out           Output file.
-	-stream=true   Streaming mode.
 </pre>

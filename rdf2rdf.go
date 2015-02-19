@@ -17,6 +17,16 @@ var usage = `rdf2rdf
 -------
 Convert between different RDF serialization formats.
 
+Usage:
+	rdf2rdf -in=input.xml -out=output.ttl
+
+Options:
+	-h --help      Show this message.
+	-in            Input file.
+	-out           Output file.
+	-stream=true   Streaming mode.
+	-v=false       Verbose mode (shows progress indicator)
+
 By default the converter is streaming both input and output, emitting
 converted triples/quads as soon as they are available. This ensures you can
 convert huge files with minimum memory footprint. However, if you have
@@ -38,16 +48,6 @@ the following table:
   N-Quads   | .nq
   RDF/XML   | .rdf .rdfxml .xml
   Turtle    | .ttl
-
-Usage:
-	rdf2rdf -in=input.xml -out=output.ttl
-
-Options:
-	-h --help      Show this message.
-	-in            Input file. 
-	-out           Output file.
-	-stream=true   Streaming mode.
-	-v=false       Verbose mode (shows progress indicator)
 
 `
 
