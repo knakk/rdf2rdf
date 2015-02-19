@@ -6,9 +6,11 @@ import (
 	"io"
 	"log"
 	"os"
+	"time"
 	"unicode/utf8"
 
 	"github.com/knakk/rdf"
+	"github.com/mitchellh/ioprogress"
 )
 
 var usage = `rdf2rdf
@@ -45,6 +47,7 @@ Options:
 	-in            Input file. 
 	-out           Output file.
 	-stream=true   Streaming mode.
+	-v=false       Verbose mode (shows progress indicator)
 
 `
 
@@ -56,6 +59,7 @@ func main() {
 	}
 	input := flag.String("in", "", "Input file")
 	output := flag.String("out", "", "Output file")
+	verbose := flag.Bool("v", false, "Verbose mode")
 	flag.Parse()
 
 	if *input == "" || *output == "" {
@@ -69,6 +73,25 @@ func main() {
 		log.Fatal(err)
 	}
 	defer inFile.Close()
+
+	stat, err := inFile.Stat()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var inFileRdr io.Reader
+	if *verbose {
+		inFileRdr = &ioprogress.Reader{
+			Reader:       inFile,
+			Size:         stat.Size(),
+			DrawInterval: time.Microsecond,
+			DrawFunc: ioprogress.DrawTerminalf(os.Stdout, func(p, t int64) string {
+				return ioprogress.DrawTextFormatBytes(p, t)
+			}),
+		}
+	} else {
+		inFileRdr = inFile
+	}
 
 	outFile, err := os.Create(*output)
 	if err != nil {
@@ -112,14 +135,19 @@ func main() {
 		log.Fatalf("Unsopported file exension on output file: %s", outFile.Name())
 	}
 
-	tripleToTriple(inFile, outFile, inFormat, outFormat)
+	t0 := time.Now()
+	n := tripleToTriple(inFileRdr, outFile, inFormat, outFormat)
+	if *verbose {
+		fmt.Printf("Done. Converted %d triples in %v.\n", n, time.Now().Sub(t0))
+	}
 }
 
-func tripleToTriple(inFile, outFile *os.File, inFormat, outFormat rdf.Format) {
+func tripleToTriple(inFile io.Reader, outFile io.Writer, inFormat, outFormat rdf.Format) int {
 	dec := rdf.NewTripleDecoder(inFile, inFormat)
 	// TODO set base to file name?
 	enc := rdf.NewTripleEncoder(outFile, outFormat)
 
+	i := 0
 	for t, err := dec.Decode(); err != io.EOF; t, err = dec.Decode() {
 		if err != nil {
 			log.Fatal(err)
@@ -128,11 +156,13 @@ func tripleToTriple(inFile, outFile *os.File, inFormat, outFormat rdf.Format) {
 		if err != nil {
 			log.Fatal(err)
 		}
+		i++
 	}
 	err := enc.Close()
 	if err != nil {
 		log.Fatal(err)
 	}
+	return i
 }
 
 func fileExtension(s string) string {
