@@ -60,6 +60,7 @@ func main() {
 	input := flag.String("in", "", "Input file")
 	output := flag.String("out", "", "Output file")
 	verbose := flag.Bool("v", false, "Verbose mode")
+	stream := flag.Bool("stream", true, "Streaming mode")
 	flag.Parse()
 
 	if *input == "" || *output == "" {
@@ -136,27 +137,39 @@ func main() {
 	}
 
 	t0 := time.Now()
-	n := tripleToTriple(inFileRdr, outFile, inFormat, outFormat)
+	n := tripleToTriple(inFileRdr, outFile, inFormat, outFormat, *stream)
 	if *verbose {
 		fmt.Printf("Done. Converted %d triples in %v.\n", n, time.Now().Sub(t0))
 	}
 }
 
-func tripleToTriple(inFile io.Reader, outFile io.Writer, inFormat, outFormat rdf.Format) int {
+func tripleToTriple(inFile io.Reader, outFile io.Writer, inFormat, outFormat rdf.Format, stream bool) int {
 	dec := rdf.NewTripleDecoder(inFile, inFormat)
 	// TODO set base to file name?
 	enc := rdf.NewTripleEncoder(outFile, outFormat)
 
 	i := 0
-	for t, err := dec.Decode(); err != io.EOF; t, err = dec.Decode() {
+	if stream {
+		for t, err := dec.Decode(); err != io.EOF; t, err = dec.Decode() {
+			if err != nil {
+				log.Fatal(err)
+			}
+			err = enc.Encode(t)
+			if err != nil {
+				log.Fatal(err)
+			}
+			i++
+		}
+	} else {
+		tr, err := dec.DecodeAll()
 		if err != nil {
 			log.Fatal(err)
 		}
-		err = enc.Encode(t)
+		err = enc.EncodeAll(tr)
 		if err != nil {
 			log.Fatal(err)
 		}
-		i++
+		i = len(tr)
 	}
 	err := enc.Close()
 	if err != nil {
