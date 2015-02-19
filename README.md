@@ -7,6 +7,15 @@ Primarly made to test and showcase the capabilites of the [rdf package](https://
 
 Currently only convertes between N-Triples & Turtle. More formats are coming soon.
 
+## Installation
+Install as you would any other Go package:
+
+    go get -u github.com/knakk/rdf2rdf
+
+Provided that `GOPATH/bin` is on your `PATH`, you're good to go.
+
+When the tool has been proven stable and complete, I can provide binaries for the most common OS'es for download.
+
 ## Usage
 <pre>
 rdf2rdf
