@@ -5,7 +5,7 @@ Primarly made to test and showcase the capabilites of the [rdf package](https://
 
 ## Status
 
-Currently only convertes between N-Triples & Trutle. More formats are coming soon.
+Currently only convertes between N-Triples & Turtle. More formats are coming soon.
 
 ## Usage
 <pre>
@@ -17,10 +17,11 @@ Usage:
 	rdf2rdf -in=input.xml -out=output.ttl
 
 Options:
-	-h --help      Show this message.
-	-in            Input file.
-	-out           Output file.
-	-stream=true   Streaming mode.
+  -h --help      Show this message.
+  -in            Input file.
+  -out           Output file.
+  -stream=true   Streaming mode.
+  -v=false       Verbose mode (shows progress indicator)
 
 By default the converter is streaming both input and output, emitting
 converted triples/quads as soon as they are available. This ensures you can
