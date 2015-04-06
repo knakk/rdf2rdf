@@ -116,6 +116,8 @@ func main() {
 		inFormat = rdf.FormatNQ
 	case "ttl":
 		inFormat = rdf.FormatTTL
+	case "xml", "rdf", "rdfxml":
+		inFormat = rdf.FormatRDFXML
 	case "":
 		log.Fatal("Unknown file format. No file extension on input file.")
 	default:

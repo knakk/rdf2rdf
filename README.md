@@ -5,7 +5,11 @@ Primarly made to test and showcase the capabilites of the [rdf package](https://
 
 ## Status
 
-Currently only convertes between N-Triples & Turtle. More formats are coming soon.
+Currently supported input formats: RDF/XML, N-Triples, N-Quads, Turtle.
+
+Currently supported output formats: N-Triples, Turtle.
+
+More formats are coming soon.
 
 ## Installation
 Install as you would any other Go package:
@@ -14,7 +18,7 @@ Install as you would any other Go package:
 
 Provided that `GOPATH/bin` is on your `PATH`, you're good to go.
 
-When the tool has been proven stable and complete, I can provide binaries for the most common OS'es for download.
+When the tool has proven stable and complete, I can provide binaries for the most common OS'es for download.
 
 ## Usage
 <pre>
