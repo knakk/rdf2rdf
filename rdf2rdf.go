@@ -111,13 +111,13 @@ func main() {
 
 	switch inExt {
 	case "nt":
-		inFormat = rdf.FormatNT
+		inFormat = rdf.NTriples
 	case "nq":
-		inFormat = rdf.FormatNQ
+		inFormat = rdf.NQuads
 	case "ttl":
-		inFormat = rdf.FormatTTL
+		inFormat = rdf.Turtle
 	case "xml", "rdf", "rdfxml":
-		inFormat = rdf.FormatRDFXML
+		inFormat = rdf.RDFXML
 	case "":
 		log.Fatal("Unknown file format. No file extension on input file.")
 	default:
@@ -126,12 +126,12 @@ func main() {
 
 	switch outExt {
 	case "nt":
-		outFormat = rdf.FormatNT
+		outFormat = rdf.NTriples
 	case "nq":
 		// No other quad-formats supported ATM
 		log.Fatal("Serializing to N-Quads currently not supported.")
 	case "ttl":
-		outFormat = rdf.FormatTTL
+		outFormat = rdf.Turtle
 	case "":
 		log.Fatal("Unknown file format. No file extension on output file.")
 	default:
