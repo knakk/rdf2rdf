@@ -121,7 +121,7 @@ func main() {
 	case "":
 		log.Fatal("Unknown file format. No file extension on input file.")
 	default:
-		log.Fatalf("Unsopported file exension on input file: %s", inFile.Name())
+		log.Fatalf("Unsupported file exension on input file: %s", inFile.Name())
 	}
 
 	switch outExt {
@@ -135,7 +135,7 @@ func main() {
 	case "":
 		log.Fatal("Unknown file format. No file extension on output file.")
 	default:
-		log.Fatalf("Unsopported file exension on output file: %s", outFile.Name())
+		log.Fatalf("Unsupported file exension on output file: %s", outFile.Name())
 	}
 
 	t0 := time.Now()
